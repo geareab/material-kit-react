@@ -3,7 +3,7 @@
   "author": "minimals.cc",
   "licence": "MIT",
   "version": "1.2.0",
-  "homepage": "https://github.com/geareab/geareab.github.io",
+  "homepage": "https://geareab.github.io//SM_basicFrontend",
   "private": false,
   "scripts": {
     "start": "react-scripts start",
