@@ -3,6 +3,7 @@
   "author": "minimals.cc",
   "licence": "MIT",
   "version": "1.2.0",
+  "homepage": "https://github.com/geareab/geareab.github.io",
   "private": false,
   "scripts": {
     "start": "react-scripts start",
@@ -10,7 +11,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js,.jsx ./src",
-    "lint:fix": "eslint --fix --ext .js,.jsx ./src"
+    "lint:fix": "eslint --fix --ext .js,.jsx ./src",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -80,6 +83,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.25.2",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "gh-pages": "^3.2.3",
     "prettier": "^2.4.1"
   }
 }
