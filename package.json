@@ -3,7 +3,6 @@
   "author": "minimals.cc",
   "licence": "MIT",
   "version": "1.2.0",
-  "homepage": "https://geareab.github.io//SM_basicFrontend",
   "private": false,
   "scripts": {
     "start": "react-scripts start",
@@ -11,9 +10,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js,.jsx ./src",
-    "lint:fix": "eslint --fix --ext .js,.jsx ./src",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "lint:fix": "eslint --fix --ext .js,.jsx ./src"
   },
   "eslintConfig": {
     "extends": [
@@ -55,6 +52,7 @@
     "faker": "^5.5.3",
     "formik": "^2.2.9",
     "framer-motion": "^4.1.17",
+    "fuse.js": "^6.5.3",
     "history": "^5.0.1",
     "lodash": "^4.17.21",
     "numeral": "^2.0.6",
@@ -83,7 +81,6 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.25.2",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "gh-pages": "^3.2.3",
     "prettier": "^2.4.1"
   }
 }

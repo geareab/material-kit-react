@@ -1,8 +1,8 @@
-import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
 import { useState, useEffect } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import { Link as RouterLink } from 'react-router-dom';
+import Fuse from 'fuse.js';
 
 // material
 import {
@@ -35,30 +35,41 @@ const TABLE_HEAD = [
 ];
 
 // ----------------------------------------------------------------------
+const options = {
+  includeScore: true,
+  // equivalent to `keys: [['author', 'tags', 'value']]`
+  keys: ['name']
+};
 
 function applySortFilter(array, query) {
-  console.log(query);
-  return filter(
-    array,
-    (_user) =>
-      _user.name
-        .toLowerCase()
-        .split(' ')
-        .join('')
-        .indexOf(query.toLowerCase().split(' ').join('')) !== -1 &&
-      _user.name
-        .toLowerCase()
-        .split(' ')
-        .join('')
-        .indexOf(query.toLowerCase().split(' ').join('')) < 1
-  );
+  const fuse = new Fuse(array, options);
+
+  const result = fuse.search(query);
+  return result.slice(0, 30);
+
+  // return filter(
+  //   array,
+  //   (_user) =>
+  //     _user.name
+  //       .toLowerCase()
+  //       .split(' ')
+  //       .join('')
+  //       .indexOf(query.toLowerCase().split(' ').join('')) !== -1 &&
+  //     _user.name
+  //       .toLowerCase()
+  //       .split(' ')
+  //       .join('')
+  //       .indexOf(query.toLowerCase().split(' ').join('')) < 1
+  // );
 }
 
+// ----------------------------------------------------------------------
 export default function User() {
   const [filterName, setFilterName] = useState('');
   const [USERLIST, setUSERLIST] = useState([]);
   const [loadingItems, setLoadingitems] = useState(true);
   const [firstSearch, setFirstSearch] = useState(true);
+  const [isEmpty, setisEmpty] = useState(true);
 
   // we will use async/await to fetch this data
 
@@ -72,18 +83,24 @@ export default function User() {
         headers: {
           'Content-Type': 'application/json',
           Authorization:
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwidXNlcklEIjoiNjFkNmM1MWQ2NzRkYWJlMmExZjdkM2EwIiwiaWF0IjoxNjQxNzYxMTI3LCJleHAiOjE2NDE4NDc1Mjd9.dEmfEvJEHOG4miZDyrUPGAeq4qGSumRJa6EV8NcWg-0'
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwidXNlcklEIjoiNjFkNmM1MWQ2NzRkYWJlMmExZjdkM2EwIiwiaWF0IjoxNjQyMDA1MzM3LCJleHAiOjE2NDIwOTE3Mzd9.1e76a9o7pUAi_Q7mPgLogPbR-NkAgMsSgNrbb2smHgk'
         }
       });
       const data = await response.json();
-      console.log(data);
+
       setLoadingitems(false);
       // store the data into our books variable
-      setUSERLIST(data.item);
+      setUSERLIST(data.item.slice(0, 100));
     }
   }, []);
+  console.log(USERLIST);
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
+    if (USERLIST.isEmpty) {
+      setisEmpty(false);
+    } else {
+      setUSERLIST(applySortFilter(USERLIST, filterName));
+    }
 
     setFirstSearch(false);
     if (event.target.value === '') {
@@ -91,7 +108,7 @@ export default function User() {
     }
   };
 
-  const filteredUsers = applySortFilter(USERLIST, filterName).slice(0, 30);
+  const filteredUsers = applySortFilter(USERLIST, filterName);
   const isUserNotFound = filteredUsers.length === 0;
 
   return (
@@ -131,9 +148,9 @@ export default function User() {
               <TableContainer sx={{ minWidth: 500 }}>
                 <Table>
                   <UserListHead headLabel={TABLE_HEAD} rowCount={USERLIST.length} />
-                  {!firstSearch && (
+                  {!isEmpty && !firstSearch && (
                     <TableBody>
-                      {filteredUsers.map((row) => {
+                      {USERLIST.map((row) => {
                         const { _id, name, company, location } = row;
                         return (
                           <TableRow key={_id} tabIndex={-1}>
@@ -155,7 +172,12 @@ export default function User() {
                   {isUserNotFound && (
                     <TableBody>
                       <TableRow>
-                        <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                        <TableCell
+                          align="center"
+                          colSpan={6}
+                          sx={{ py: 3 }}
+                          style={{ borderBottom: '#212b36' }}
+                        >
                           <SearchNotFound searchQuery={filterName} />
                         </TableCell>
                       </TableRow>

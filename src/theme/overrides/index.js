@@ -9,11 +9,13 @@ import Backdrop from './Backdrop';
 import Typography from './Typography';
 import IconButton from './IconButton';
 import Autocomplete from './Autocomplete';
+import TableCell from './TableCell';
 
 // ----------------------------------------------------------------------
 
 export default function ComponentsOverrides(theme) {
   return merge(
+    TableCell(theme),
     Card(theme),
     Lists(theme),
     Paper(theme),
