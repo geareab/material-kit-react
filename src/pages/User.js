@@ -2,7 +2,6 @@ import { Icon } from '@iconify/react';
 import { useState, useEffect } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import { Link as RouterLink } from 'react-router-dom';
-import Fuse from 'fuse.js';
 
 // material
 import {
@@ -22,9 +21,8 @@ import {
 // components
 import Page from '../components/Page';
 import Scrollbar from '../components/Scrollbar';
-import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
-
+import applySortFilter from '../components/SortLogic/FuseSearch';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -35,33 +33,6 @@ const TABLE_HEAD = [
 ];
 
 // ----------------------------------------------------------------------
-const options = {
-  includeScore: true,
-  // equivalent to `keys: [['author', 'tags', 'value']]`
-  keys: ['name']
-};
-
-function applySortFilter(array, query) {
-  const fuse = new Fuse(array, options);
-
-  const result = fuse.search(query);
-  return result.slice(0, 30);
-
-  // return filter(
-  //   array,
-  //   (_user) =>
-  //     _user.name
-  //       .toLowerCase()
-  //       .split(' ')
-  //       .join('')
-  //       .indexOf(query.toLowerCase().split(' ').join('')) !== -1 &&
-  //     _user.name
-  //       .toLowerCase()
-  //       .split(' ')
-  //       .join('')
-  //       .indexOf(query.toLowerCase().split(' ').join('')) < 1
-  // );
-}
 
 // ----------------------------------------------------------------------
 export default function User() {
@@ -69,7 +40,6 @@ export default function User() {
   const [USERLIST, setUSERLIST] = useState([]);
   const [loadingItems, setLoadingitems] = useState(true);
   const [firstSearch, setFirstSearch] = useState(true);
-  const [isEmpty, setisEmpty] = useState(true);
 
   // we will use async/await to fetch this data
 
@@ -90,17 +60,17 @@ export default function User() {
 
       setLoadingitems(false);
       // store the data into our books variable
-      setUSERLIST(data.item.slice(0, 100));
+      setUSERLIST(data.item);
     }
   }, []);
-  console.log(USERLIST);
+
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
-    if (USERLIST.isEmpty) {
-      setisEmpty(false);
-    } else {
-      setUSERLIST(applySortFilter(USERLIST, filterName));
-    }
+    // if (USERLIST.isEmpty) {
+    //   setisEmpty(false);
+    // } else {
+    //   setUSERLIST(applySortFilter(USERLIST, filterName));
+    // }
 
     setFirstSearch(false);
     if (event.target.value === '') {
@@ -109,7 +79,6 @@ export default function User() {
   };
 
   const filteredUsers = applySortFilter(USERLIST, filterName);
-  const isUserNotFound = filteredUsers.length === 0;
 
   return (
     <Page title="User | Minimal-UI">
@@ -148,10 +117,10 @@ export default function User() {
               <TableContainer sx={{ minWidth: 500 }}>
                 <Table>
                   <UserListHead headLabel={TABLE_HEAD} rowCount={USERLIST.length} />
-                  {!isEmpty && !firstSearch && (
+                  {!firstSearch && (
                     <TableBody>
-                      {USERLIST.map((row) => {
-                        const { _id, name, company, location } = row;
+                      {filteredUsers.map((row) => {
+                        const { _id, name, company, location } = row.item;
                         return (
                           <TableRow key={_id} tabIndex={-1}>
                             <TableCell align="left">
@@ -166,21 +135,6 @@ export default function User() {
                           </TableRow>
                         );
                       })}
-                    </TableBody>
-                  )}
-
-                  {isUserNotFound && (
-                    <TableBody>
-                      <TableRow>
-                        <TableCell
-                          align="center"
-                          colSpan={6}
-                          sx={{ py: 3 }}
-                          style={{ borderBottom: '#212b36' }}
-                        >
-                          <SearchNotFound searchQuery={filterName} />
-                        </TableCell>
-                      </TableRow>
                     </TableBody>
                   )}
                 </Table>
